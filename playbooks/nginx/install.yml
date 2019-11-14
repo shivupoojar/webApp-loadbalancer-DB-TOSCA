@@ -1,0 +1,90 @@
+---
+- hosts: all
+  become: yes
+  tasks:
+    - name: Install EPEL repo
+      package:
+        name: 
+          - epel-release
+    - name: install the package from a remote repo
+      yum:
+        name: http://rpms.remirepo.net/enterprise/remi-release-7.rpm
+        state: present
+    - name: Install EPEL repo
+      yum:
+        name: 
+          - yum-utils
+    - name: Enable remi repo
+      shell: |
+        sudo yum-config-manager --enable remi-php72 -y
+        sudo yum update -y
+
+
+    - name: Install nginx
+      package:
+        name: 
+          - nginx
+
+    - name: Install php72
+      package:
+        name:
+          - php72 
+          - php72-php-fpm
+          - php72-php-gd
+          - php72-php-json
+          - php72-php-mbstring
+          - php72-php-mysqlnd
+          - php72-php-xml
+          - php72-php-xmlrpc
+          - php72-php-opcache
+          - php
+          - php-mysql
+          - php-pgsql
+          - php-fpm
+          - php-gd
+          - php-xml
+          - php-mbstring
+
+    - name: modify following php config
+      shell: |
+        sudo sed -i 's/;cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/g' /etc/php.ini        
+        sudo sed -i 's/user = apache/user = nginx/g' /etc/php-fpm.d/www.conf
+        sudo sed -i 's/group = apache/group = nginx/g' /etc/php-fpm.d/www.conf
+
+    - name: Edit /etc/php.ini file 
+      become: yes
+      become_method: sudo
+      lineinfile:
+        path: /etc/php.ini
+        line: 'extension_dir = "/usr/lib64/php/modules/"'
+        insertbefore: BOF
+    
+    - name: backup existing config file
+      command: mv /etc/nginx/nginx.conf /etc/nginx/nginx.conf.old
+  
+    - name: upload the nginx config file
+      copy:
+        src: /home/chinmaya/Desktop/xopera.new/ChinmayaExp/example_jnu2/playbooks/nginx/nginx.conf
+        dest: /etc/nginx/nginx.conf
+    
+    - name: some ad-hoc configuration
+      shell: sudo setsebool -P httpd_can_network_connect_db 1
+
+    - name: start php-fpm
+      shell: sudo service php-fpm restart
+
+    - name: Start nginx
+      service:
+        name: nginx
+        enabled: yes
+        state: started
+    # - name: Start php7.1-fpm.service
+    #   service:
+    #     name: nginx
+    #     enabled: yes
+    #     state: started
+
+    - name: Set attributes
+      set_stats:
+        data:
+          site_config_dir: /etc/nginx/conf.d

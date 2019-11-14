@@ -1,0 +1,41 @@
+---
+- hosts: all
+  become: yes
+  vars:
+     server1_ip: "{{ lookup('file', '/tmp/{{server1}}_ip.txt') }}"
+     server2_ip: "{{ lookup('file', '/tmp/{{server2}}_ip.txt') }}"
+  tasks:
+    - name: Install EPEL repo
+      package:
+        name: 
+          - epel-release
+
+    - name: Install nginx
+      package:
+        name: 
+          - nginx
+
+    - name: Edit nginx/config  file - 1 
+      become: yes
+      become_method: sudo
+      lineinfile:
+        path: /etc/nginx/nginx.conf
+        line: 'upstream balancer{ server {{server1_ip}}; server {{server2_ip}}; }'
+        insertbefore: '^\s+server\s\{'
+
+    - name: Edit nginx/config  file - 2
+      replace:
+        path: /etc/nginx/nginx.conf
+        regexp: '^\s+location\s\/\s\{\s+\}'
+        replace: 'location / { proxy_set_header Host $host; proxy_pass http://balancer; }'
+
+    - name: Start nginx
+      service:
+        name: nginx
+        enabled: yes
+        state: started
+
+    - name: Set attributes
+      set_stats:
+        data:
+          site_config_dir: /etc/nginx/conf.d
