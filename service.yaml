@@ -203,75 +203,75 @@ topology_template:
       requirements:
         - host: vm_loadBalancer
 
-    # vm1:
-    #   type: my.nodes.VM.OpenStack
-    #   properties:
-    #     name: nginx_host1
-    #     image: d3eeb4ae-9b8c-49ed-8314-123a8a808b2b
-    #     flavor: 6b254b9e-db1c-40de-994c-07d69dd732a6
-    #     network: provider_64_net
-    #     key_name: rem-VM2
+    vm1:
+      type: my.nodes.VM.OpenStack
+      properties:
+        name: nginx_host1
+        image: d3eeb4ae-9b8c-49ed-8314-123a8a808b2b
+        flavor: 6b254b9e-db1c-40de-994c-07d69dd732a6
+        network: provider_64_net
+        key_name: rem-VM2
 
-    # vm2:
-    #   type: my.nodes.VM.OpenStack
-    #   properties:
-    #     name: nginx_host2
-    #     image: d3eeb4ae-9b8c-49ed-8314-123a8a808b2b
-    #     flavor: 6b254b9e-db1c-40de-994c-07d69dd732a6
-    #     network: provider_64_net
-    #     key_name: rem-VM2
+    vm2:
+      type: my.nodes.VM.OpenStack
+      properties:
+        name: nginx_host2
+        image: d3eeb4ae-9b8c-49ed-8314-123a8a808b2b
+        flavor: 6b254b9e-db1c-40de-994c-07d69dd732a6
+        network: provider_64_net
+        key_name: rem-VM2
     
-    # nginx:
-    #   type: my.nodes.Nginx
-    #   requirements:
-    #     - host: vm1
+    nginx:
+      type: my.nodes.Nginx
+      requirements:
+        - host: vm1
 
-    # site:
-    #   type: my.nodes.Nginx.Site      
-    #   properties:
-    #         hostname: nginx_host2
-    #         database_port: 5432
-    #         database_name: database1
-    #         database_username: centos
-    #         database_password: centos
-    #         database_table: table1  
-    #   requirements:
-    #     - host: nginx
-    #     # - relationship: my.relationships.NginxSiteHosting
+    site:
+      type: my.nodes.Nginx.Site      
+      properties:
+            hostname: nginx_host2
+            database_port: 5432
+            database_name: database1
+            database_username: centos
+            database_password: centos
+            database_table: table1  
+      requirements:
+        - host: nginx
+        # - relationship: my.relationships.NginxSiteHosting
     
-    # dbserver1:
-    #   type: my.nodes.database
-    #   properties:
-    #     db_name:  database1
-    #     db_user:   centos
-    #     db_password:  centos
-    #   requirements:
-    #     - host: vm2
+    dbserver1:
+      type: my.nodes.database
+      properties:
+        db_name:  database1
+        db_user:   centos
+        db_password:  centos
+      requirements:
+        - host: vm2
 
-    # vm3:
-    #   type: my.nodes.VM.OpenStack
-    #   properties:
-    #     name: nginx_host3
-    #     image: d3eeb4ae-9b8c-49ed-8314-123a8a808b2b
-    #     flavor: 6b254b9e-db1c-40de-994c-07d69dd732a6
-    #     network: provider_64_net
-    #     key_name: rem-VM2
+    vm3:
+      type: my.nodes.VM.OpenStack
+      properties:
+        name: nginx_host3
+        image: d3eeb4ae-9b8c-49ed-8314-123a8a808b2b
+        flavor: 6b254b9e-db1c-40de-994c-07d69dd732a6
+        network: provider_64_net
+        key_name: rem-VM2
 
-    # nginx2:
-    #   type: my.nodes.Nginx
-    #   requirements:
-    #     - host: vm3
+    nginx2:
+      type: my.nodes.Nginx
+      requirements:
+        - host: vm3
 
-    # site2:
-    #   type: my.nodes.Nginx.Site      
-    #   properties:
-    #         hostname: nginx_host2
-    #         database_port: 5432
-    #         database_name: database1
-    #         database_username: centos
-    #         database_password: centos
-    #         database_table: table1  
-    #   requirements:
-    #     - host: nginx2
+    site2:
+      type: my.nodes.Nginx.Site      
+      properties:
+            hostname: nginx_host2
+            database_port: 5432
+            database_name: database1
+            database_username: centos
+            database_password: centos
+            database_table: table1  
+      requirements:
+        - host: nginx2
 
 
