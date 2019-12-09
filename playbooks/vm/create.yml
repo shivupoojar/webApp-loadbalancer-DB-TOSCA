@@ -46,3 +46,4 @@
   tasks:
     - name: Wait for ssh to wake up
       wait_for_connection:
+          timeout: 200
