@@ -1,4 +1,4 @@
-tosca_definitions_version: tosca_simple_yaml_1_0
+tosca_definitions_version: tosca_simple_yaml_1_3
 
 node_types:
   my.nodes.VM.OpenStack:
@@ -26,18 +26,19 @@ node_types:
     interfaces:
       Standard:
         type: tosca.interfaces.node.lifecycle.Standard
-        create:
-          inputs:
-            vm_name:  { default: { get_property: [ SELF, name     ] } }
-            image:    { default: { get_property: [ SELF, image    ] } }
-            flavor:   { default: { get_property: [ SELF, flavor   ] } }
-            network:  { default: { get_property: [ SELF, network  ] } }
-            key_name: { default: { get_property: [ SELF, key_name ] } }
-          implementation: playbooks/vm/create.yml
-        delete:
-          inputs:
-            id: { default: { get_attribute: [ SELF, id ] } }
-          implementation: playbooks/vm/delete.yml
+        operations:
+          create:
+            inputs:
+              vm_name:  { default: { get_property: [ SELF, name     ] } }
+              image:    { default: { get_property: [ SELF, image    ] } }
+              flavor:   { default: { get_property: [ SELF, flavor   ] } }
+              network:  { default: { get_property: [ SELF, network  ] } }
+              key_name: { default: { get_property: [ SELF, key_name ] } }
+            implementation: playbooks/vm/create.yml
+          delete:
+            inputs:
+              id: { default: { get_attribute: [ SELF, id ] } }
+            implementation: playbooks/vm/delete.yml
 
   my.nodes.database:
     derived_from: tosca.nodes.SoftwareComponent
@@ -61,16 +62,17 @@ node_types:
     interfaces:
       Standard:
         type: tosca.interfaces.node.lifecycle.Standard
-        create:
-          inputs:
-            db_name:  { default: { get_property: [ SELF, db_name     ] } }
-            db_user:   { default: { get_property: [ SELF, db_user   ] } }
-            db_password:  { default: { get_property: [ SELF, db_password ] } }
-          implementation: playbooks/db/installdbServr.yml
-        # delete:
-        #   inputs:
-        #     id: { default: { get_attribute: [ SELF, id ] } }
-        #   implementation: playbooks/vm/delete.yml
+        operations:
+          create:
+            inputs:
+              db_name:  { default: { get_property: [ SELF, db_name     ] } }
+              db_user:   { default: { get_property: [ SELF, db_user   ] } }
+              db_password:  { default: { get_property: [ SELF, db_password ] } }
+            implementation: playbooks/db/installdbServr.yml
+          # delete:
+          #   inputs:
+          #     id: { default: { get_attribute: [ SELF, id ] } }
+          #   implementation: playbooks/vm/delete.yml
     requirements:
       - host:
           capability: tosca.capabilities.Compute
@@ -92,12 +94,13 @@ node_types:
     interfaces:
       Standard:
         type: tosca.interfaces.node.lifecycle.Standard
-        create:
-          implementation:
-            primary: playbooks/nginx/install.yml
-        delete:
-          implementation:
-            primary: playbooks/nginx/uninstall.yml
+        operations:
+          create:
+            implementation:
+              primary: playbooks/nginx/install.yml
+          delete:
+            implementation:
+              primary: playbooks/nginx/uninstall.yml
   my.nodes.Nginx.loadBalancer:
     derived_from: tosca.nodes.SoftwareComponent
     properties:
@@ -121,15 +124,16 @@ node_types:
     interfaces:
       Standard:
         type: tosca.interfaces.node.lifecycle.Standard
-        create:
-          inputs:
-            server1: { default: { get_property: [ SELF, server1 ] } }
-            server2: { default: { get_property: [ SELF, server2 ] } }
-          implementation:
-            primary: playbooks/lb/install.yml
-        delete:
-          implementation:
-            primary: playbooks/lb/uninstall.yml
+        operations:
+          create:
+            inputs:
+              server1: { default: { get_property: [ SELF, server1 ] } }
+              server2: { default: { get_property: [ SELF, server2 ] } }
+            implementation:
+              primary: playbooks/lb/install.yml
+          delete:
+            implementation:
+              primary: playbooks/lb/uninstall.yml
 
   my.nodes.Nginx.Site:
     derived_from: tosca.nodes.SoftwareComponent
@@ -159,16 +163,17 @@ node_types:
     interfaces:
       Standard:
         type: tosca.interfaces.node.lifecycle.Standard
-        create:
-          inputs:
-            hostname: { default: { get_property: [ SELF, hostname ] } }
-            database_port: { default: { get_property: [ SELF, database_port ] } }
-            database_name: { default: { get_property: [ SELF, database_name ] } }
-            database_username: { default: { get_property: [ SELF, database_username ] } }
-            database_password: { default: { get_property: [ SELF, database_password ] } }
-            database_table: { default: { get_property: [ SELF, database_table ] } }
-          implementation: playbooks/site/create.yml
-        delete: playbooks/site/delete.yml
+        operations:
+          create:
+            inputs:
+              hostname: { default: { get_property: [ SELF, hostname ] } }
+              database_port: { default: { get_property: [ SELF, database_port ] } }
+              database_name: { default: { get_property: [ SELF, database_name ] } }
+              database_username: { default: { get_property: [ SELF, database_username ] } }
+              database_password: { default: { get_property: [ SELF, database_password ] } }
+              database_table: { default: { get_property: [ SELF, database_table ] } }
+            implementation: playbooks/site/create.yml
+          delete: playbooks/site/delete.yml
 
 
 
