@@ -1,0 +1,18 @@
+{
+  "tosca_name": {
+    "is_set": true,
+    "data": "nginx-lb-connectToLB-site"
+  },
+  "tosca_id": {
+    "is_set": true,
+    "data": "nginx-lb_0--site_0"
+  },
+  "state": {
+    "is_set": true,
+    "data": "initial"
+  },
+  "credential": {
+    "is_set": false,
+    "data": null
+  }
+}

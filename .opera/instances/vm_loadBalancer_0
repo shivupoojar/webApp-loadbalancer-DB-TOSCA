@@ -1,0 +1,54 @@
+{
+  "tosca_name": {
+    "is_set": true,
+    "data": "vm_loadBalancer"
+  },
+  "tosca_id": {
+    "is_set": true,
+    "data": "vm_loadBalancer_0"
+  },
+  "state": {
+    "is_set": true,
+    "data": "started"
+  },
+  "name": {
+    "is_set": true,
+    "data": "nginx_LB"
+  },
+  "image": {
+    "is_set": true,
+    "data": "centos7"
+  },
+  "flavor": {
+    "is_set": true,
+    "data": "m1.xsmall"
+  },
+  "network": {
+    "is_set": true,
+    "data": "provider_64_net"
+  },
+  "key_name": {
+    "is_set": true,
+    "data": "macbook-chinmaya"
+  },
+  "private_address": {
+    "is_set": true,
+    "data": ""
+  },
+  "public_address": {
+    "is_set": true,
+    "data": "172.17.67.196"
+  },
+  "networks": {
+    "is_set": false,
+    "data": null
+  },
+  "ports": {
+    "is_set": false,
+    "data": null
+  },
+  "id": {
+    "is_set": true,
+    "data": "c130cdbe-86b0-48cc-b0af-ea07d3f9db6e"
+  }
+}
