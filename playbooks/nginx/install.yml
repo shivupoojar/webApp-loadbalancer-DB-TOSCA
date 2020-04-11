@@ -64,7 +64,7 @@
   
     - name: upload the nginx config file
       copy:
-        src: /home/chinmaya/Desktop/xopera.new/ChinmayaExp/example_jnu2/playbooks/nginx/nginx.conf
+        src: /Users/chinmaya/Documents/GitHub/webApp-loadbalancer-DB-TOSCA/playbooks/nginx/nginx.conf
         dest: /etc/nginx/nginx.conf
     
     - name: some ad-hoc configuration

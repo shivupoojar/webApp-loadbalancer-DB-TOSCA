@@ -1,0 +1,46 @@
+{
+  "tosca_name": {
+    "is_set": true,
+    "data": "site2"
+  },
+  "tosca_id": {
+    "is_set": true,
+    "data": "site2_0"
+  },
+  "state": {
+    "is_set": true,
+    "data": "started"
+  },
+  "component_version": {
+    "is_set": false,
+    "data": null
+  },
+  "admin_credential": {
+    "is_set": false,
+    "data": null
+  },
+  "hostname": {
+    "is_set": true,
+    "data": "nginx_host2"
+  },
+  "database_port": {
+    "is_set": true,
+    "data": 5432
+  },
+  "database_name": {
+    "is_set": true,
+    "data": "database1"
+  },
+  "database_username": {
+    "is_set": true,
+    "data": "centos"
+  },
+  "database_password": {
+    "is_set": true,
+    "data": "centos"
+  },
+  "database_table": {
+    "is_set": true,
+    "data": "table1"
+  }
+}

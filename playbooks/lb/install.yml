@@ -14,13 +14,15 @@
       package:
         name: 
           - nginx
-
+    # # The following 2 tasks should be in executed when a new webApp is created and the load balancer needs to be reconfigured.
+    ## move the following 2 tasks to the add_webApp.yml file
     - name: Edit nginx/config  file - 1 
       become: yes
       become_method: sudo
       lineinfile:
         path: /etc/nginx/nginx.conf
-        line: 'upstream balancer{ server {{server1_ip}}; server {{server2_ip}}; }'
+        line: 'upstream balancer{ server 0.0.0.0; }'
+        # line: 'upstream balancer{ server {{server1_ip}}; server {{server2_ip}}; }'
         insertbefore: '^\s+server\s\{'
 
     - name: Edit nginx/config  file - 2

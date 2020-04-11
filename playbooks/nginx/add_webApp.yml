@@ -1,0 +1,29 @@
+---
+- hosts: all
+  become: yes
+  tasks:
+    - name: Here configure and reload the load balancer.
+      shell: |
+        sudo echo "Configure and reload the load balancer {{ LB_end_point_IP }} 
+        -> {{ WebApp_end_points_IP }}"
+        sudo touch /tmp/{{LB_end_point_IP}}.txt
+        sudo touch /tmp/{{WebApp_end_points_IP}}.txt
+
+
+    - name: Edit nginx/config  file - 1 
+      become: yes
+      become_method: sudo
+      lineinfile:
+        path: /etc/nginx/nginx.conf
+        line: 'upstream balancer{ server 0.0.0.0; server 0.0.0.0; }'
+        # line: 'upstream balancer{ server {{server1_ip}}; server {{server2_ip}}; }'
+        insertbefore: '^\s+server\s\{'
+
+    - name: Edit nginx/config  file - 2
+      replace:
+        path: /etc/nginx/nginx.conf
+        regexp: '^\s+location\s\/\s\{\s+\}'
+        replace: 'location / { proxy_set_header Host $host; proxy_pass http://balancer; }'
+
+
+

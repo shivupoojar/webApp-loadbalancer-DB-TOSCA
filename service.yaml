@@ -73,10 +73,10 @@ node_types:
           #   inputs:
           #     id: { default: { get_attribute: [ SELF, id ] } }
           #   implementation: playbooks/vm/delete.yml
-    requirements:
-      - host:
-          capability: tosca.capabilities.Compute
-          relationship: my.relationships.databaseHosting
+    # requirements:
+    #   - host:
+    #       capability: tosca.capabilities.Compute
+    #       relationship: my.relationships.databaseHosting
 
   my.nodes.Nginx:
     derived_from: tosca.nodes.SoftwareComponent
@@ -118,9 +118,13 @@ node_types:
         type: string
         description: Location of nginx site configs
     capabilities:
-      host:
-        type: tosca.capabilities.Compute
-        valid_source_types: [my.nodes.Nginx.Site]
+      # - host:
+      #     type: tosca.capabilities.Compute
+      #     valid_source_types: [my.nodes.Nginx.Site]
+      connectToLB:
+          type: tosca.capabilities.Endpoint
+          valid_source_types: [ my.nodes.Nginx.Site ]
+          occurrences: [0, UNBOUNDED]
     interfaces:
       Standard:
         type: tosca.interfaces.node.lifecycle.Standard
@@ -160,6 +164,11 @@ node_types:
       - host:
           capability: tosca.capabilities.Compute
           relationship: my.relationships.NginxSiteHosting
+      - connectToLB:
+          capability: tosca.capabilities.Endpoint
+          node: my.nodes.Nginx.loadBalancer
+          relationship: radon.relationships.LB_WebApp
+          occurrences: [0, 1]
     interfaces:
       Standard:
         type: tosca.interfaces.node.lifecycle.Standard
@@ -178,15 +187,32 @@ node_types:
 
 
 
-relationship_types:    
+relationship_types:  
+  radon.relationships.LB_WebApp:
+     derived_from: tosca.relationships.ConnectsTo
+     description: Allow the new web App to be connected to a existing load balancer.
+     # valid_target_types: [ my.nodes.Nginx.loadBalancer ]
+     interfaces:
+        Standard:
+          type: tosca.interfaces.node.lifecycle.Standard
+          operations:
+              post_configure_target:
+                inputs:
+                  LB_end_point_IP: { default: { get_attribute: [TARGET, host, host, public_address] } }
+                  WebApp_end_points_IP: { default: { get_attribute: [SOURCE, host, host, public_address] } }
+                implementation:
+                  primary: playbooks/nginx/add_webApp.yml
+
   my.relationships.NginxSiteHosting:
     derived_from: tosca.relationships.HostedOn
-    valid_target_types: [my.nodes.Nginx]    
+    # valid_target_types: [my.nodes.Nginx]
     interfaces:
-      Configure:
-        add_source:
-          implementation:
-            primary: playbooks/nginx/reload.yml
+      Standard:
+        type: tosca.interfaces.node.lifecycle.Standard
+        operations:
+          post_configure_source:
+            implementation:
+              primary: playbooks/nginx/reload.yml
 
 
 topology_template:
@@ -195,10 +221,10 @@ topology_template:
       type: my.nodes.VM.OpenStack
       properties:
         name: nginx_LB
-        image: d3eeb4ae-9b8c-49ed-8314-123a8a808b2b
-        flavor: 6b254b9e-db1c-40de-994c-07d69dd732a6
+        image: centos7
+        flavor: m1.xsmall
         network: provider_64_net
-        key_name: rem-VM2
+        key_name: macbook-chinmaya
 
     nginx-lb:
       type: my.nodes.Nginx.loadBalancer
@@ -207,24 +233,24 @@ topology_template:
         server2: nginx_host3
       requirements:
         - host: vm_loadBalancer
-
+        
     vm1:
       type: my.nodes.VM.OpenStack
       properties:
         name: nginx_host1
-        image: d3eeb4ae-9b8c-49ed-8314-123a8a808b2b
-        flavor: 6b254b9e-db1c-40de-994c-07d69dd732a6
+        image: centos7
+        flavor: m1.xsmall
         network: provider_64_net
-        key_name: rem-VM2
+        key_name: macbook-chinmaya
 
-    vm2:
-      type: my.nodes.VM.OpenStack
-      properties:
-        name: nginx_host2
-        image: d3eeb4ae-9b8c-49ed-8314-123a8a808b2b
-        flavor: 6b254b9e-db1c-40de-994c-07d69dd732a6
-        network: provider_64_net
-        key_name: rem-VM2
+    # vm2:
+    #   type: my.nodes.VM.OpenStack
+    #   properties:
+    #     name: nginx_host2
+    #     image: d3eeb4ae-9b8c-49ed-8314-123a8a808b2b
+    #     flavor: 6b254b9e-db1c-40de-994c-07d69dd732a6
+    #     network: provider_64_net
+    #     key_name: rem-VM2
     
     nginx:
       type: my.nodes.Nginx
@@ -242,25 +268,26 @@ topology_template:
             database_table: table1  
       requirements:
         - host: nginx
+        - connectToLB: nginx-lb
         # - relationship: my.relationships.NginxSiteHosting
     
-    dbserver1:
-      type: my.nodes.database
-      properties:
-        db_name:  database1
-        db_user:   centos
-        db_password:  centos
-      requirements:
-        - host: vm2
+    # dbserver1:
+    #   type: my.nodes.database
+    #   properties:
+    #     db_name:  database1
+    #     db_user:   centos
+    #     db_password:  centos
+    #   requirements:
+    #     - host: vm2
 
     vm3:
       type: my.nodes.VM.OpenStack
       properties:
         name: nginx_host3
-        image: d3eeb4ae-9b8c-49ed-8314-123a8a808b2b
-        flavor: 6b254b9e-db1c-40de-994c-07d69dd732a6
+        image: centos7
+        flavor: m1.xsmall
         network: provider_64_net
-        key_name: rem-VM2
+        key_name: macbook-chinmaya
 
     nginx2:
       type: my.nodes.Nginx
@@ -278,5 +305,7 @@ topology_template:
             database_table: table1  
       requirements:
         - host: nginx2
+        - connectToLB: nginx-lb
+        # - relationship: my.relationships.NginxSiteHosting
 
 
