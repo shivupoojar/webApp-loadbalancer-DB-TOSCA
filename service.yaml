@@ -124,6 +124,7 @@ node_types:
       connectToLB:
           type: tosca.capabilities.Endpoint
           valid_source_types: [ my.nodes.Nginx.Site ]
+          # relationship: radon.relationships.LB_WebApp
           occurrences: [0, UNBOUNDED]
     interfaces:
       Standard:
@@ -193,13 +194,16 @@ relationship_types:
      description: Allow the new web App to be connected to a existing load balancer.
      # valid_target_types: [ my.nodes.Nginx.loadBalancer ]
      interfaces:
-        Standard:
-          type: tosca.interfaces.node.lifecycle.Standard
+        # Standard:
+        #   type: tosca.interfaces.node.lifecycle.Standard
+        Configure:
           operations:
-              post_configure_target:
+              post_configure_source:
                 inputs:
-                  LB_end_point_IP: { default: { get_attribute: [TARGET, host, host, public_address] } }
-                  WebApp_end_points_IP: { default: { get_attribute: [SOURCE, host, host, public_address] } }
+                  # LB_end_point_IP: { default: { get_attribute: [TARGET, host, host, public_address] } }
+                  # WebApp_end_points_IP: { default: { get_attribute: [SOURCE, host, host, public_address] } }
+                  LB_end_point_IP: { default: { get_attribute: [TARGET, host, public_address] } }
+                  WebApp_end_points_IP: { default: { get_attribute: [SOURCE, host, public_address] } }
                 implementation:
                   primary: playbooks/nginx/add_webApp.yml
 
@@ -234,14 +238,14 @@ topology_template:
       requirements:
         - host: vm_loadBalancer
         
-    vm1:
-      type: my.nodes.VM.OpenStack
-      properties:
-        name: nginx_host1
-        image: centos7
-        flavor: m1.xsmall
-        network: provider_64_net
-        key_name: macbook-chinmaya
+    # vm1:
+    #   type: my.nodes.VM.OpenStack
+    #   properties:
+    #     name: nginx_host1
+    #     image: centos7
+    #     flavor: m1.xsmall
+    #     network: provider_64_net
+    #     key_name: macbook-chinmaya
 
     # vm2:
     #   type: my.nodes.VM.OpenStack
@@ -252,10 +256,10 @@ topology_template:
     #     network: provider_64_net
     #     key_name: rem-VM2
     
-    nginx:
-      type: my.nodes.Nginx
-      requirements:
-        - host: vm1
+    # nginx:
+    #   type: my.nodes.Nginx
+    #   requirements:
+    #     - host: vm1
 
     site:
       type: my.nodes.Nginx.Site      
@@ -267,7 +271,7 @@ topology_template:
             database_password: centos
             database_table: table1  
       requirements:
-        - host: nginx
+        - host: vm_loadBalancer
         - connectToLB: nginx-lb
         # - relationship: my.relationships.NginxSiteHosting
     
@@ -280,32 +284,32 @@ topology_template:
     #   requirements:
     #     - host: vm2
 
-    vm3:
-      type: my.nodes.VM.OpenStack
-      properties:
-        name: nginx_host3
-        image: centos7
-        flavor: m1.xsmall
-        network: provider_64_net
-        key_name: macbook-chinmaya
+    # vm3:
+    #   type: my.nodes.VM.OpenStack
+    #   properties:
+    #     name: nginx_host3
+    #     image: centos7
+    #     flavor: m1.xsmall
+    #     network: provider_64_net
+    #     key_name: macbook-chinmaya
 
-    nginx2:
-      type: my.nodes.Nginx
-      requirements:
-        - host: vm3
+    # nginx2:
+    #   type: my.nodes.Nginx
+    #   requirements:
+    #     - host: vm3
 
-    site2:
-      type: my.nodes.Nginx.Site      
-      properties:
-            hostname: nginx_host2
-            database_port: 5432
-            database_name: database1
-            database_username: centos
-            database_password: centos
-            database_table: table1  
-      requirements:
-        - host: nginx2
-        - connectToLB: nginx-lb
+    # site2:
+    #   type: my.nodes.Nginx.Site      
+    #   properties:
+    #         hostname: nginx_host2
+    #         database_port: 5432
+    #         database_name: database1
+    #         database_username: centos
+    #         database_password: centos
+    #         database_table: table1  
+    #   requirements:
+    #     - host: nginx2
+    #     - connectToLB: nginx-lb
         # - relationship: my.relationships.NginxSiteHosting
 
 

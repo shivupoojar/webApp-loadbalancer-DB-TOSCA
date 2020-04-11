@@ -9,6 +9,9 @@
         sudo touch /tmp/{{LB_end_point_IP}}.txt
         sudo touch /tmp/{{WebApp_end_points_IP}}.txt
 
+    - copy:
+           content: "your config line here"
+           dest: "/tmp/test.txt"
 
     - name: Edit nginx/config  file - 1 
       become: yes
@@ -19,11 +22,11 @@
         # line: 'upstream balancer{ server {{server1_ip}}; server {{server2_ip}}; }'
         insertbefore: '^\s+server\s\{'
 
-    - name: Edit nginx/config  file - 2
-      replace:
-        path: /etc/nginx/nginx.conf
-        regexp: '^\s+location\s\/\s\{\s+\}'
-        replace: 'location / { proxy_set_header Host $host; proxy_pass http://balancer; }'
+    # - name: Edit nginx/config  file - 2
+    #   replace:
+    #     path: /etc/nginx/nginx.conf
+    #     regexp: '^\s+location\s\/\s\{\s+\}'
+    #     replace: 'location / { proxy_set_header Host $host; proxy_pass http://balancer; }'
 
 
 
