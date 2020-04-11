@@ -16,7 +16,7 @@
             <title>Hello World!</title>
           </head>
           <body>
-            <h1>Sample we page</h1>
+            <h1>Sample we page : {{hostname}}</h1>
             <p>With little content ;)</p>
           </body>
           </html>

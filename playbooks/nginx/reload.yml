@@ -6,6 +6,3 @@
       service:
         name: nginx
         state: restarted
-    - copy:
-           content: "your config line here"
-           dest: "/tmp/test.txt"

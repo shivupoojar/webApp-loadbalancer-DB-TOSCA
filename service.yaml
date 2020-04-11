@@ -237,6 +237,20 @@ topology_template:
         server2: nginx_host3
       requirements:
         - host: vm_loadBalancer
+    
+    site:
+      type: my.nodes.Nginx.Site      
+      properties:
+            hostname: site
+            database_port: 5432
+            database_name: database1
+            database_username: centos
+            database_password: centos
+            database_table: table1  
+      requirements:
+        - host: vm_loadBalancer
+        - connectToLB: nginx-lb
+        # - relationship: my.relationships.NginxSiteHosting
         
     # vm1:
     #   type: my.nodes.VM.OpenStack
@@ -261,19 +275,7 @@ topology_template:
     #   requirements:
     #     - host: vm1
 
-    site:
-      type: my.nodes.Nginx.Site      
-      properties:
-            hostname: nginx_host2
-            database_port: 5432
-            database_name: database1
-            database_username: centos
-            database_password: centos
-            database_table: table1  
-      requirements:
-        - host: vm_loadBalancer
-        - connectToLB: nginx-lb
-        # - relationship: my.relationships.NginxSiteHosting
+    
     
     # dbserver1:
     #   type: my.nodes.database
@@ -301,7 +303,7 @@ topology_template:
     # site2:
     #   type: my.nodes.Nginx.Site      
     #   properties:
-    #         hostname: nginx_host2
+    #         hostname: site2
     #         database_port: 5432
     #         database_name: database1
     #         database_username: centos
