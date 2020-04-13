@@ -60,7 +60,7 @@
         insertbefore: BOF
     
     - name: backup existing config file
-      command: mv /etc/nginx/nginx.conf /etc/nginx/nginx.conf.old
+      command: cp /etc/nginx/nginx.conf /etc/nginx/nginx.conf.old
   
     - name: upload the nginx config file
       copy:
