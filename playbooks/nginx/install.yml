@@ -31,7 +31,7 @@
   
     - name: upload the nginx config file
       copy:
-        src: /home/pelle/soft/xopera-opera/service/webApp-loadbalancer-DB-TOSCA/playbooks/nginx/nginx.conf
+        src: /Users/chinmaya/Documents/GitHub/webApp-loadbalancer-DB-TOSCA/playbooks/nginx/nginx.conf
         dest: /etc/nginx/nginx.conf
     
 
