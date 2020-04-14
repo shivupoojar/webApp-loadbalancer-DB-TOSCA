@@ -40,44 +40,6 @@ node_types:
               id: { default: { get_attribute: [ SELF, id ] } }
             implementation: playbooks/vm/delete.yml
 
-  my.nodes.database:
-    derived_from: tosca.nodes.SoftwareComponent
-    properties:
-      db_name:
-        type: string
-        description: name of the database
-      db_user:
-        type: string
-        description: User name of the database
-      db_password:
-        type: string
-        description: password of the database
-      host_ip_prop:
-        type: string
-        description: ip of the host machine
-    attributes:
-      host_ip_attr:
-        type: string
-        description: ip of the host where database is deployed
-    interfaces:
-      Standard:
-        type: tosca.interfaces.node.lifecycle.Standard
-        operations:
-          create:
-            inputs:
-              db_name:  { default: { get_property: [ SELF, db_name     ] } }
-              db_user:   { default: { get_property: [ SELF, db_user   ] } }
-              db_password:  { default: { get_property: [ SELF, db_password ] } }
-            implementation: playbooks/db/installdbServr.yml
-          # delete:
-          #   inputs:
-          #     id: { default: { get_attribute: [ SELF, id ] } }
-          #   implementation: playbooks/vm/delete.yml
-    # requirements:
-    #   - host:
-    #       capability: tosca.capabilities.Compute
-    #       relationship: my.relationships.databaseHosting
-
   my.nodes.Nginx:
     derived_from: tosca.nodes.SoftwareComponent
     attributes:
@@ -103,13 +65,6 @@ node_types:
               primary: playbooks/nginx/uninstall.yml
   my.nodes.Nginx.loadBalancer:
     derived_from: tosca.nodes.SoftwareComponent
-    properties:
-      server1:
-        type: string
-        description: hostname to balance the load
-      server2:
-        type: string
-        description: hostname to balance the load
     attributes:
       site_config_dir:
         type: string
@@ -123,23 +78,11 @@ node_types:
           node: my.nodes.Nginx.Site
           relationship: radon.relationships.LB_WebApp
           occurrences: [0, 1]
-    # capabilities:
-    #   # - host:
-    #   #     type: tosca.capabilities.Compute
-    #   #     valid_source_types: [my.nodes.Nginx.Site]
-    #   connectToLB:
-    #       type: tosca.capabilities.Endpoint
-    #       valid_source_types: [ my.nodes.Nginx.Site ]
-    #       # relationship: radon.relationships.LB_WebApp
-    #       occurrences: [0, UNBOUNDED]
     interfaces:
       Standard:
         type: tosca.interfaces.node.lifecycle.Standard
         operations:
           create:
-            inputs:
-              server1: { default: { get_property: [ SELF, server1 ] } }
-              server2: { default: { get_property: [ SELF, server2 ] } }
             implementation:
               primary: playbooks/lb/install.yml
           delete:
@@ -152,30 +95,10 @@ node_types:
       hostname:
         type: string
         description: IP of the remote database
-      database_port:
-        type: string
-        description: port of the remote database
-      database_name:
-        type: string
-        description: name of the remote database
-      database_username:
-        type: string
-        description: username to login
-      database_password:
-        type: string
-        description: password to login remote database
-      database_table:
-        type: string
-        description: table name to access
     requirements:
       - host:
           capability: tosca.capabilities.Compute
           relationship: my.relationships.NginxSiteHosting
-      # - connectToLB:
-      #     capability: tosca.capabilities.Endpoint
-      #     node: my.nodes.Nginx.loadBalancer
-      #     relationship: radon.relationships.LB_WebApp
-      #     occurrences: [0, 1]
     capabilities:
       connectToLB:
           type: tosca.capabilities.Endpoint
@@ -188,11 +111,6 @@ node_types:
           create:
             inputs:
               hostname: { default: { get_property: [ SELF, hostname ] } }
-              database_port: { default: { get_property: [ SELF, database_port ] } }
-              database_name: { default: { get_property: [ SELF, database_name ] } }
-              database_username: { default: { get_property: [ SELF, database_username ] } }
-              database_password: { default: { get_property: [ SELF, database_password ] } }
-              database_table: { default: { get_property: [ SELF, database_table ] } }
             implementation: playbooks/site/create.yml
           delete: playbooks/site/delete.yml
 
@@ -231,17 +149,14 @@ topology_template:
     vm_loadBalancer:
       type: my.nodes.VM.OpenStack
       properties:
-        name: nginx_LB
+        name: nginx_LBpelle
         image: centos7
         flavor: m1.xsmall
         network: provider_64_net
-        key_name: macbook-chinmaya
+        key_name: jakovits_ldpc
 
     nginx-lb:
       type: my.nodes.Nginx.loadBalancer
-      properties:
-        server1: nginx_host1
-        server2: nginx_host3
       requirements:
         - host: vm_loadBalancer
         - connectToLB: site
@@ -249,11 +164,12 @@ topology_template:
     vm1:
       type: my.nodes.VM.OpenStack
       properties:
-        name: nginx_host1
+        name: nginx_host1pelle
         image: centos7
         flavor: m1.xsmall
         network: provider_64_net
-        key_name: macbook-chinmaya
+        key_name: jakovits_ldpc
+
 
     nginx:
       type: my.nodes.Nginx
@@ -264,64 +180,6 @@ topology_template:
       type: my.nodes.Nginx.Site      
       properties:
             hostname: site
-            database_port: 5432
-            database_name: database1
-            database_username: centos
-            database_password: centos
-            database_table: table1  
       requirements:
         - host: nginx
-        # - connectToLB: nginx-lb
-        # - relationship: my.relationships.NginxSiteHosting
-
-    # vm2:
-    #   type: my.nodes.VM.OpenStack
-    #   properties:
-    #     name: nginx_host2
-    #     image: d3eeb4ae-9b8c-49ed-8314-123a8a808b2b
-    #     flavor: 6b254b9e-db1c-40de-994c-07d69dd732a6
-    #     network: provider_64_net
-    #     key_name: rem-VM2
-    
-
-
-    
-    
-    # dbserver1:
-    #   type: my.nodes.database
-    #   properties:
-    #     db_name:  database1
-    #     db_user:   centos
-    #     db_password:  centos
-    #   requirements:
-    #     - host: vm2
-
-    # vm3:
-    #   type: my.nodes.VM.OpenStack
-    #   properties:
-    #     name: nginx_host3
-    #     image: centos7
-    #     flavor: m1.xsmall
-    #     network: provider_64_net
-    #     key_name: macbook-chinmaya
-
-    # nginx2:
-    #   type: my.nodes.Nginx
-    #   requirements:
-    #     - host: vm3
-
-    # site2:
-    #   type: my.nodes.Nginx.Site      
-    #   properties:
-    #         hostname: site2
-    #         database_port: 5432
-    #         database_name: database1
-    #         database_username: centos
-    #         database_password: centos
-    #         database_table: table1  
-    #   requirements:
-    #     - host: nginx2
-    #     - connectToLB: nginx-lb
-        # - relationship: my.relationships.NginxSiteHosting
-
 
