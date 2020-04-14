@@ -149,11 +149,11 @@ topology_template:
     vm_loadBalancer:
       type: my.nodes.VM.OpenStack
       properties:
-        name: nginx_LBpelle
+        name: nginx_LB
         image: centos7
         flavor: m1.xsmall
         network: provider_64_net
-        key_name: jakovits_ldpc
+        key_name: macbook-chinmaya
 
     nginx-lb:
       type: my.nodes.Nginx.loadBalancer
@@ -164,11 +164,11 @@ topology_template:
     vm1:
       type: my.nodes.VM.OpenStack
       properties:
-        name: nginx_host1pelle
+        name: nginx_host1
         image: centos7
         flavor: m1.xsmall
         network: provider_64_net
-        key_name: jakovits_ldpc
+        key_name: macbook-chinmaya
 
 
     nginx:
